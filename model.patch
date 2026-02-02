@@ -1,0 +1,554 @@
+diff --git a/frontend/README.md b/frontend/README.md
+index 48dd63f..735145d 100644
+--- a/frontend/README.md
++++ b/frontend/README.md
+@@ -1,50 +1,361 @@
+-# Welcome to your Expo app 👋
++# B2B Mobile App - Frontend
+ 
+-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
++A professional mobile application built with **Expo (React Native)** featuring role-based authentication, beautiful UI/UX, and cross-platform support for iOS, Android, and Web.
+ 
+-## Get started
++## 🎯 Tech Stack
+ 
+-1. Install dependencies
++- **Framework**: Expo SDK 54 with expo-router (file-based routing)
++- **Language**: TypeScript
++- **UI Components**: React Native (Native components)
++- **State Management**: Zustand + React Context
++- **Data Fetching**: React Query (@tanstack/react-query)
++- **HTTP Client**: Axios
++- **Navigation**: Expo Router (file-based) + React Navigation
++- **Storage**: expo-secure-store (JWT tokens)
++- **Forms**: React Hook Form
++- **Icons**: @expo/vector-icons (Ionicons)
+ 
+-   ```bash
+-   npm install
+-   ```
++## 📁 Project Structure
+ 
+-2. Start the app
++```
++frontend/
++├── app/                          # File-based routing (expo-router)
++│   ├── _layout.tsx              # Root layout with providers
++│   ├── index.tsx                # Entry point (auto-redirect)
++│   ├── auth/
++│   │   ├── login.tsx            # Login screen
++│   │   └── register.tsx         # Registration screen
++│   └── (tabs)/                  # Tab navigation group
++│       ├── _layout.tsx          # Tab navigator config
++│       ├── dashboard.tsx        # Dashboard screen
++│       ├── orders.tsx           # Orders screen (Phase 3)
++│       ├── products.tsx         # Products screen (Phase 2)
++│       ├── vendors.tsx          # Vendors screen (Phase 4)
++│       └── profile.tsx          # Profile screen
++├── contexts/
++│   └── AuthContext.tsx          # Authentication context & hooks
++├── assets/                       # Images, fonts, etc.
++├── .env                          # Environment variables
++├── app.json                      # Expo configuration
++├── package.json                  # Dependencies
++└── tsconfig.json                 # TypeScript config
++```
+ 
+-   ```bash
+-   npx expo start
+-   ```
++## 🚀 Getting Started
+ 
+-In the output, you'll find options to open the app in a
++### Prerequisites
++- Node.js 18+
++- Yarn or npm
++- Expo Go app on your mobile device (for testing)
+ 
+-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
++### Installation
+ 
+-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
++```bash
++# Install dependencies
++yarn install
+ 
+-## Get a fresh project
++# Start development server
++yarn start
++```
+ 
+-When you're ready, run:
++### Running on Different Platforms
+ 
+ ```bash
+-npm run reset-project
++# Web browser
++yarn web
++
++# iOS simulator (macOS only)
++yarn ios
++
++# Android emulator
++yarn android
++
++# Scan QR code with Expo Go app
++yarn start
+ ```
+ 
+-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
++## 🔐 Authentication Flow
++
++### Registration
++1. User fills registration form with:
++   - Name, Email, Mobile, Role, Company, Password
++2. Frontend validates input
++3. Sends POST to `/api/auth/register`
++4. Receives JWT token + user data
++5. Stores token securely in expo-secure-store
++6. Updates auth context
++7. Navigates to dashboard
++
++### Login
++1. User enters email/mobile + password
++2. Sends POST to `/api/auth/login`
++3. Receives JWT token + user data
++4. Stores token securely
++5. Updates auth context
++6. Navigates to dashboard
++
++### Auto-Login
++1. On app start, checks for stored token
++2. If found, loads user data
++3. Auto-navigates to dashboard
++4. If not found, shows login screen
++
++### Logout
++1. User clicks logout in profile
++2. Deletes token from secure storage
++3. Clears auth context
++4. Navigates to login
++
++## 🎨 UI/UX Patterns
++
++### Navigation
++- **Bottom Tab Navigation**: 5 main tabs (Dashboard, Orders, Products, Vendors, Profile)
++- **Stack Navigation**: Modal screens for auth flow
++- **File-based Routing**: Using expo-router conventions
++
++### Mobile-First Design
++- **Safe Areas**: Proper handling with SafeAreaView
++- **Keyboard**: KeyboardAvoidingView for forms
++- **Touch Targets**: Minimum 44x44 points
++- **Pull-to-Refresh**: Dashboard data refresh
++- **Loading States**: ActivityIndicator for async operations
++
++### Role-Based UI
++Different dashboard views based on user role:
++- **Admin**: All stats + full management
++- **Sales**: Order/inventory management
++- **Buyer**: Order viewing + payments
++
++## 🔧 Environment Variables
++
++Create `.env` file:
++
++```env
++# Backend API URL
++EXPO_PUBLIC_BACKEND_URL=http://localhost:8001
++
++# For physical device testing, use your computer's IP
++# EXPO_PUBLIC_BACKEND_URL=http://192.168.1.x:8001
++```
++
++**Note**: Variables must be prefixed with `EXPO_PUBLIC_` to be accessible in the app.
++
++## 📦 Key Dependencies
++
++### Production Dependencies
++```json
++{
++  "expo": "~54.0.33",
++  "expo-router": "~6.0.23",
++  "react": "19.1.0",
++  "react-native": "0.81.5",
++  "@tanstack/react-query": "^5.90.20",
++  "axios": "^1.13.4",
++  "expo-secure-store": "^15.0.8",
++  "zustand": "^5.0.11",
++  "react-hook-form": "^7.71.1",
++  "@react-native-picker/picker": "^2.11.1"
++}
++```
++
++### Development Dependencies
++```json
++{
++  "typescript": "~5.9.2",
++  "@types/react": "~19.1.10",
++  "eslint": "^9.25.0",
++  "eslint-config-expo": "~10.0.0"
++}
++```
++
++## 🧪 Testing
++
++### Manual Testing Checklist
++
++#### Authentication
++- [ ] Register with valid data
++- [ ] Register with invalid email
++- [ ] Register with short password
++- [ ] Login with email
++- [ ] Login with mobile
++- [ ] Login with wrong password
++- [ ] Auto-login on app restart
++- [ ] Logout functionality
++
++#### Dashboard
++- [ ] Stats load correctly
++- [ ] Pull-to-refresh works
++- [ ] Role-specific stats display
++- [ ] Quick actions visible
++- [ ] User info card displays
++
++#### Navigation
++- [ ] All tabs accessible
++- [ ] Back navigation works
++- [ ] Deep linking works
++- [ ] Auth screens are modal
++
++#### Cross-Platform
++- [ ] Works on iOS
++- [ ] Works on Android
++- [ ] Works on Web
++- [ ] Responsive on different screen sizes
++
++## 🐛 Troubleshooting
++
++### Common Issues
++
++#### "Metro bundler fails to start"
++```bash
++# Clear cache and restart
++npx expo start --clear
++```
++
++#### "Cannot connect to backend"
++```bash
++# Check backend is running
++curl http://localhost:8001/api/
++
++# For physical device, use computer's IP in .env
++EXPO_PUBLIC_BACKEND_URL=http://192.168.1.x:8001
++```
++
++#### "Module not found" errors
++```bash
++# Reinstall dependencies
++rm -rf node_modules
++yarn install
++```
++
++#### "Couldn't find a LinkingContext"
++```bash
++# Remove conflicting navigation packages
++yarn remove @react-navigation/native @react-navigation/bottom-tabs
++npx expo install @react-navigation/native
++rm -rf .expo .metro-cache
++yarn start
++```
++
++#### White screen on device
++```bash
++# Check Expo logs in terminal
++# Shake device → "Reload"
++# Verify backend URL is accessible from device
++```
++
++## 🚀 Deployment
++
++### Build for Production
++
++#### iOS
++```bash
++# Install EAS CLI
++npm install -g eas-cli
++
++# Login to Expo
++eas login
++
++# Build for iOS
++eas build --platform ios --profile production
++
++# Submit to App Store
++eas submit --platform ios
++```
++
++#### Android
++```bash
++# Build for Android
++eas build --platform android --profile production
++
++# Submit to Play Store
++eas submit --platform android
++```
++
++#### Web
++```bash
++# Export web build
++npx expo export:web
++
++# Deploy to Vercel
++vercel --prod
++
++# Or Netlify
++netlify deploy --prod --dir web-build
++```
++
++### Update Environment for Production
++
++```env
++EXPO_PUBLIC_BACKEND_URL=https://your-production-api.com
++```
++
++## 📱 App Configuration
++
++Edit `app.json` for app metadata:
++
++```json
++{
++  "expo": {
++    "name": "B2B Mobile App",
++    "slug": "b2b-mobile-app",
++    "version": "1.0.0",
++    "orientation": "portrait",
++    "icon": "./assets/images/icon.png",
++    "scheme": "b2bapp",
++    "splash": {
++      "image": "./assets/images/splash.png",
++      "resizeMode": "contain",
++      "backgroundColor": "#ffffff"
++    },
++    "ios": {
++      "bundleIdentifier": "com.yourcompany.b2bapp",
++      "supportsTablet": true
++    },
++    "android": {
++      "package": "com.yourcompany.b2bapp",
++      "adaptiveIcon": {
++        "foregroundImage": "./assets/images/adaptive-icon.png",
++        "backgroundColor": "#ffffff"
++      }
++    }
++  }
++}
++```
++
++## 🔒 Security Best Practices
++
++✅ **Implemented:**
++- JWT tokens stored in secure storage (expo-secure-store)
++- No sensitive data in AsyncStorage
++- Password never stored in frontend
++- API calls use HTTPS in production
++- Input validation on forms
++
++⚠️ **TODO for Production:**
++- Enable certificate pinning
++- Implement biometric authentication
++- Add token refresh mechanism
++- Set up error tracking (Sentry)
++- Implement rate limiting UI
+ 
+-## Learn more
++## 📚 Resources
+ 
+-To learn more about developing your project with Expo, look at the following resources:
++- [Expo Documentation](https://docs.expo.dev/)
++- [Expo Router Docs](https://expo.github.io/router/docs/)
++- [React Native Docs](https://reactnative.dev/)
++- [React Query Docs](https://tanstack.com/query/latest)
+ 
+-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
++## 🎯 Future Enhancements
+ 
+-## Join the community
++- [ ] Offline mode with data sync
++- [ ] Biometric authentication
++- [ ] Push notifications
++- [ ] Image uploads
++- [ ] QR code scanning
++- [ ] Dark mode
++- [ ] Multi-language support
++- [ ] Analytics integration
+ 
+-Join our community of developers creating universal apps.
++---
+ 
+-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
++**Built with ❤️ using Expo and React Native**
+\ No newline at end of file
+diff --git a/model.patch b/model.patch
+index b344279..76c0395 100644
+--- a/model.patch
++++ b/model.patch
+@@ -1,153 +0,0 @@
+-diff --git a/model.patch b/model.patch
+-index c24b924..e69de29 100644
+---- a/model.patch
+-+++ b/model.patch
+-@@ -1,148 +0,0 @@
+--diff --git a/frontend/app/_layout.tsx b/frontend/app/_layout.tsx
+--index dc6c715..abd3b9b 100644
+----- a/frontend/app/_layout.tsx
+--+++ b/frontend/app/_layout.tsx
+--@@ -1,3 +1,4 @@
+--+import React from 'react';
+-- import { Stack } from 'expo-router';
+-- import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+-- import { AuthProvider } from '../contexts/AuthContext';
+--diff --git a/model.patch b/model.patch
+--index b5857fd..e69de29 100644
+----- a/model.patch
+--+++ b/model.patch
+--@@ -1,134 +0,0 @@
+---diff --git a/test_result.md b/test_result.md
+---index 7e73a35..9560e37 100644
+------ a/test_result.md
+---+++ b/test_result.md
+---@@ -107,75 +107,93 @@ user_problem_statement: "B2B Mobile Application - Phase 1: Authentication + Dash
+--- backend:
+---   - task: "User Registration API"
+---     implemented: true
+----    working: "NA"
+---+    working: true
+---     file: "/app/backend/server.py"
+---     stuck_count: 0
+---     priority: "high"
+----    needs_retesting: true
+---+    needs_retesting: false
+---     status_history:
+---       - working: "NA"
+---         agent: "main"
+---         comment: "Implemented POST /api/auth/register endpoint with email/mobile validation, password hashing, company multi-tenancy, and JWT token generation"
+---+      - working: true
+---+        agent: "testing"
+---+        comment: "✅ COMPREHENSIVE TESTING PASSED: All registration scenarios tested successfully - Admin/Sales/Buyer roles, email/mobile validation, duplicate prevention, password hashing security, company multi-tenancy, JWT token generation, and error handling for invalid inputs. 13/13 test cases passed."
+---   
+---   - task: "User Login API"
+---     implemented: true
+----    working: "NA"
+---+    working: true
+---     file: "/app/backend/server.py"
+---     stuck_count: 0
+---     priority: "high"
+----    needs_retesting: true
+---+    needs_retesting: false
+---     status_history:
+---       - working: "NA"
+---         agent: "main"
+---         comment: "Implemented POST /api/auth/login endpoint supporting both email and mobile login, password verification, and JWT token generation"
+---+      - working: true
+---+        agent: "testing"
+---+        comment: "✅ COMPREHENSIVE TESTING PASSED: All login scenarios tested successfully - email/mobile login for all roles, password verification, JWT token generation, proper error handling for incorrect credentials, non-existent users, and missing fields. 9/9 test cases passed."
+---   
+---   - task: "Get Current User API"
+---     implemented: true
+----    working: "NA"
+---+    working: true
+---     file: "/app/backend/server.py"
+---     stuck_count: 0
+---     priority: "high"
+----    needs_retesting: true
+---+    needs_retesting: false
+---     status_history:
+---       - working: "NA"
+---         agent: "main"
+---         comment: "Implemented GET /api/auth/me endpoint with JWT authentication middleware to retrieve current user details"
+---+      - working: true
+---+        agent: "testing"
+---+        comment: "✅ COMPREHENSIVE TESTING PASSED: JWT authentication working perfectly - valid token authentication, user data retrieval, password security (not exposed), proper rejection of invalid/malformed/missing tokens. 9/9 test cases passed."
+---   
+---   - task: "Dashboard Stats API"
+---     implemented: true
+----    working: "NA"
+---+    working: true
+---     file: "/app/backend/server.py"
+---     stuck_count: 0
+---     priority: "high"
+----    needs_retesting: true
+---+    needs_retesting: false
+---     status_history:
+---       - working: "NA"
+---         agent: "main"
+---         comment: "Implemented GET /api/dashboard/stats endpoint with role-based access control. Currently returns placeholder data (0 values) as other modules not yet implemented"
+---+      - working: true
+---+        agent: "testing"
+---+        comment: "✅ COMPREHENSIVE TESTING PASSED: Dashboard stats working correctly for all roles - Admin/Sales/Buyer access, proper stats structure returned, placeholder values (0) as expected for Phase 1, authentication required. 7/7 test cases passed."
+---   
+---   - task: "User Management API (Admin only)"
+---     implemented: true
+----    working: "NA"
+---+    working: true
+---     file: "/app/backend/server.py"
+---     stuck_count: 0
+---     priority: "medium"
+----    needs_retesting: true
+---+    needs_retesting: false
+---     status_history:
+---       - working: "NA"
+---         agent: "main"
+---         comment: "Implemented GET /api/users endpoint with Admin-only access to list all users in the company"
+---+      - working: true
+---+        agent: "testing"
+---+        comment: "✅ COMPREHENSIVE TESTING PASSED: Role-based access control working perfectly - Admin can access users list, Sales/Buyer properly denied (403), company isolation working, authentication required. 5/5 test cases passed."
+---   
+---   - task: "JWT Authentication Middleware"
+---     implemented: true
+----    working: "NA"
+---+    working: true
+---     file: "/app/backend/server.py"
+---     stuck_count: 0
+---     priority: "high"
+----    needs_retesting: true
+---+    needs_retesting: false
+---     status_history:
+---       - working: "NA"
+---         agent: "main"
+---         comment: "Implemented JWT token verification and role-based access control decorators using python-jose"
+---+      - working: true
+---+        agent: "testing"
+---+        comment: "✅ COMPREHENSIVE TESTING PASSED: JWT middleware working flawlessly across all protected endpoints - proper token validation, rejection of invalid/malformed/expired tokens, secure authentication flow. 12/12 test cases passed across /auth/me, /dashboard/stats, and /users endpoints."
+--- 
+--- frontend:
+---   - task: "Auth Context Provider"
+---@@ -269,16 +287,13 @@ metadata:
+---   run_ui: false
+--- 
+--- test_plan:
+----  current_focus:
+----    - "User Registration API"
+----    - "User Login API"
+----    - "Get Current User API"
+----    - "Dashboard Stats API"
+----    - "JWT Authentication Middleware"
+---+  current_focus: []
+---   stuck_tasks: []
+----  test_all: true
+---+  test_all: false
+---   test_priority: "high_first"
+--- 
+--- agent_communication:
+---   - agent: "main"
+----    message: "Phase 1 MVP (Authentication + Dashboard) implementation complete. Backend has 5 main API endpoints: register, login, get current user, dashboard stats, and user list (admin only). Frontend has complete auth flow with login/register screens, role-based dashboard, profile screen, and bottom tab navigation. JWT authentication with secure token storage is implemented. Please test all backend endpoints with different roles (Admin, Sales, Buyer) to verify authentication, authorization, and dashboard stats."
+---\ No newline at end of file
+---+    message: "Phase 1 MVP (Authentication + Dashboard) implementation complete. Backend has 5 main API endpoints: register, login, get current user, dashboard stats, and user list (admin only). Frontend has complete auth flow with login/register screens, role-based dashboard, profile screen, and bottom tab navigation. JWT authentication with secure token storage is implemented. Please test all backend endpoints with different roles (Admin, Sales, Buyer) to verify authentication, authorization, and dashboard stats."
+---+  - agent: "testing"
+---+    message: "🎉 BACKEND TESTING COMPLETE - ALL SYSTEMS OPERATIONAL! Comprehensive testing of all 6 backend tasks completed successfully with 55/55 test cases passed (100% success rate). All authentication endpoints, role-based access control, JWT middleware, dashboard stats, and user management APIs are working flawlessly. Password security verified, multi-tenancy working, validation robust. Backend is production-ready for Phase 1 MVP."
+---\ No newline at end of file
